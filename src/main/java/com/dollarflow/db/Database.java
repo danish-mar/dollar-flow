@@ -27,7 +27,7 @@ public final class Database {
 
     private static Connection open() {
         try {
-            Path dataDir = Path.of(System.getProperty("user.home"), ".dollarflow");
+            Path dataDir = dataDirectory();
             Files.createDirectories(dataDir);
             String url = "jdbc:sqlite:" + dataDir.resolve(DB_FILE);
             Connection conn = DriverManager.getConnection(url);
@@ -38,6 +38,15 @@ public final class Database {
         } catch (IOException | SQLException e) {
             throw new IllegalStateException("Could not open SQLite database", e);
         }
+    }
+
+    /** %APPDATA%\DollarFlow on Windows; ~/.dollarflow elsewhere (e.g. local dev on Linux/macOS). */
+    private static Path dataDirectory() {
+        String appData = System.getenv("APPDATA");
+        if (appData != null && !appData.isBlank()) {
+            return Path.of(appData, "DollarFlow");
+        }
+        return Path.of(System.getProperty("user.home"), ".dollarflow");
     }
 
     private static void initSchema() {
