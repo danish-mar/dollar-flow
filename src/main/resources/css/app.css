@@ -1,0 +1,385 @@
+.root {
+    -fx-background-color: #ECE9D8;
+    -fx-font-family: "Tahoma", "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 11px;
+}
+
+/* ---------- Menu buttons (hand-built on Popup, not MenuBar: no built-in open animation) ---------- */
+
+.xp-menu-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 1;
+    -fx-text-fill: #000000;
+    -fx-font-size: 11px;
+    -fx-font-weight: normal;
+    -fx-padding: 4 10 4 10;
+    -fx-cursor: hand;
+}
+
+.xp-menu-button:hover, .xp-menu-button-open {
+    -fx-background-color: #316AC5;
+    -fx-text-fill: #ffffff;
+}
+
+.xp-menu-popup {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #7F9DB9;
+    -fx-border-width: 1;
+    -fx-padding: 2;
+    -fx-effect: none;
+}
+
+.xp-menu-item {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-text-fill: #000000;
+    -fx-font-size: 11px;
+    -fx-font-weight: normal;
+    -fx-padding: 5 24 5 12;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+}
+
+.xp-menu-item:hover {
+    -fx-background-color: #316AC5;
+    -fx-text-fill: #ffffff;
+}
+
+/* ---------- Toolbar ---------- */
+
+.xp-toolbar {
+    -fx-background-color: linear-gradient(to bottom, #FDFDFD 0%, #ECE9D8 40%, #DAD7C4 100%);
+    -fx-border-color: transparent transparent #ACA899 transparent;
+    -fx-border-width: 1;
+    -fx-padding: 3 6 3 6;
+    -fx-spacing: 4;
+}
+
+.brand-icon {
+    -fx-text-fill: #0A5F38;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.brand {
+    -fx-text-fill: #0A2E6B;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.xp-toolbar-button {
+    -fx-background-color: #ECE9D8;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 1;
+    -fx-text-fill: #000000;
+    -fx-font-size: 11px;
+    -fx-padding: 4 10 4 10;
+    -fx-cursor: hand;
+    -fx-graphic-text-gap: 6;
+}
+
+.xp-toolbar-button .ikonli-font-icon {
+    -fx-icon-color: #333333;
+    -fx-icon-size: 15;
+}
+
+.xp-toolbar-button:hover {
+    -fx-background-color: #E6EFFA;
+    -fx-border-color: #99C0EE;
+}
+
+.xp-toolbar-button:selected {
+    -fx-background-color: #C1D2EE;
+    -fx-border-color: #6E96DE #C7DCF7 #C7DCF7 #6E96DE;
+}
+
+/* ---------- Content area ---------- */
+
+.content-area {
+    -fx-background-color: #ECE9D8;
+}
+
+.view-container {
+    -fx-background-color: #ECE9D8;
+}
+
+.view-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0A2E6B;
+}
+
+/* ---------- Cards (etched group boxes) ---------- */
+
+.card {
+    -fx-background-color: #ECE9D8;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-color: #ACA899 #FFFFFF #FFFFFF #ACA899;
+    -fx-border-width: 1;
+    -fx-padding: 14;
+}
+
+.card-title {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0A2E6B;
+}
+
+.field-label {
+    -fx-text-fill: #000000;
+    -fx-font-size: 11px;
+    -fx-min-width: 70;
+}
+
+.draft-total {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #000000;
+}
+
+.grand-total {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0A5F38;
+}
+
+/* ---------- Table (classic ListView look) ---------- */
+
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 0;
+    -fx-border-color: #7F9DB9;
+    -fx-border-radius: 0;
+    -fx-border-width: 1;
+    -fx-padding: 0;
+    -fx-table-cell-border-color: #D4D0C8;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: linear-gradient(to bottom, #FEFEFE 0%, #ECE9D8 50%, #D8D5C4 100%);
+    -fx-background-radius: 0;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent #ACA899 transparent transparent;
+    -fx-padding: 4 6 4 6;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #000000;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #F5F5EE;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #316AC5;
+}
+
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: #ffffff;
+}
+
+.table-cell {
+    -fx-text-fill: #000000;
+    -fx-font-size: 11px;
+    -fx-padding: 3 6 3 6;
+    -fx-border-color: transparent #E4E2D8 transparent transparent;
+}
+
+/* ---------- Inputs (sunken classic controls) ---------- */
+
+.text-field, .choice-box, .spinner, .date-picker {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 0;
+    -fx-border-color: #7F9DB9 #D4D0C8 #D4D0C8 #7F9DB9;
+    -fx-border-radius: 0;
+    -fx-border-width: 1;
+    -fx-padding: 0;
+    -fx-font-size: 11px;
+}
+
+.text-field {
+    -fx-padding: 3 6 3 6;
+}
+
+.text-field:focused, .choice-box:focused, .spinner:focused, .date-picker:focused {
+    -fx-border-color: #316AC5;
+}
+
+.choice-box .label {
+    -fx-text-fill: #000000;
+}
+
+.date-picker .text-field {
+    -fx-border-width: 0;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: #ECE9D8;
+    -fx-border-color: transparent transparent transparent #7F9DB9;
+    -fx-border-width: 1;
+}
+
+.text-area {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #7F9DB9 #D4D0C8 #D4D0C8 #7F9DB9;
+    -fx-border-width: 1;
+    -fx-font-size: 11px;
+}
+
+.text-area .content {
+    -fx-background-color: #ffffff;
+}
+
+.text-area:focused {
+    -fx-border-color: #316AC5;
+}
+
+/* ---------- Autocomplete suggestion list ---------- */
+
+.xp-suggestion-list {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #7F9DB9;
+    -fx-border-width: 1;
+    -fx-effect: none;
+}
+
+.xp-suggestion-list .list-cell {
+    -fx-text-fill: #000000;
+    -fx-font-size: 11px;
+    -fx-padding: 4 8 4 8;
+    -fx-background-color: #ffffff;
+}
+
+.xp-suggestion-list .list-cell:filled:hover,
+.xp-suggestion-list .list-cell:filled:selected {
+    -fx-background-color: #316AC5;
+    -fx-text-fill: #ffffff;
+}
+
+/* ---------- Buttons (classic 3D beveled) ---------- */
+
+.button {
+    -fx-background-color: #ECE9D8;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-color: #FFFFFF #808080 #808080 #FFFFFF;
+    -fx-border-width: 1;
+    -fx-text-fill: #000000;
+    -fx-padding: 5 14 5 14;
+    -fx-font-size: 11px;
+    -fx-font-weight: normal;
+    -fx-cursor: hand;
+    -fx-graphic-text-gap: 6;
+}
+
+.button .ikonli-font-icon {
+    -fx-icon-color: #333333;
+    -fx-icon-size: 13;
+}
+
+.button:hover {
+    -fx-background-color: #F5F3E8;
+}
+
+.button:armed {
+    -fx-border-color: #808080 #FFFFFF #FFFFFF #808080;
+    -fx-background-color: #DEDBC8;
+}
+
+.primary-button {
+    -fx-background-color: #ECE9D8;
+    -fx-text-fill: #000000;
+    -fx-font-weight: bold;
+}
+
+.primary-button .ikonli-font-icon {
+    -fx-icon-color: #0A5F38;
+}
+
+.secondary-button {
+    -fx-background-color: #ECE9D8;
+    -fx-text-fill: #000000;
+}
+
+/* ---------- Status bar ---------- */
+
+.status-bar {
+    -fx-background-color: #ECE9D8;
+    -fx-border-color: #ACA899 transparent transparent transparent;
+    -fx-border-width: 1;
+    -fx-padding: 3 10 3 10;
+}
+
+.status-bar .label {
+    -fx-text-fill: #000000;
+    -fx-font-size: 10.5px;
+}
+
+/* ---------- Alerts ---------- */
+
+.alert .header-panel {
+    -fx-background-color: #ECE9D8;
+}
+
+/* ---------- Bill receipt (View dialog + printing) ---------- */
+
+.receipt {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ACA899;
+    -fx-border-width: 1;
+}
+
+.receipt-company-name {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0A2E6B;
+}
+
+.receipt-company-address {
+    -fx-font-size: 10.5px;
+    -fx-text-fill: #55556f;
+}
+
+.receipt-field-label {
+    -fx-text-fill: #55556f;
+    -fx-font-size: 11px;
+    -fx-min-width: 110;
+}
+
+.receipt-field-value {
+    -fx-text-fill: #000000;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.receipt-grand-total-label {
+    -fx-text-fill: #0A5F38;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-min-width: 110;
+}
+
+.receipt-grand-total-value {
+    -fx-text-fill: #0A5F38;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}

@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    # JavaFX's Maven artifacts embed OS-native libraries picked based on whichever machine
+    # runs the build — building on Linux would ship a jar with Linux natives that can't run
+    # on Windows at all. This app targets Windows, so the release build runs on windows-latest.
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Build runnable jar
+        shell: bash
+        run: mvn -B package
+
+      - name: Rename jar to the release version
+        shell: bash
+        run: |
+          mkdir -p release
+          cp target/dollar-flow-*.jar "release/dollar-flow-${GITHUB_REF_NAME}.jar"
+
+      # jpackage (bundled with the JDK) wraps the jar with a private Java runtime into a
+      # double-click Windows installer, so end users don't need Java installed at all.
+      - name: Build Windows installer
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          JAR_NAME="$(basename target/dollar-flow-*.jar)"
+          jpackage \
+            --input target \
+            --name "Dollar Flow" \
+            --main-jar "$JAR_NAME" \
+            --main-class com.dollarflow.app.Main \
+            --type exe \
+            --app-version "$VERSION" \
+            --vendor "Dollar Flow" \
+            --win-shortcut \
+            --win-menu \
+            --dest installer
+          cp installer/*.exe "release/DollarFlow-Setup-${GITHUB_REF_NAME}.exe"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/dollar-flow-${{ github.ref_name }}.jar
+            release/DollarFlow-Setup-${{ github.ref_name }}.exe
+          generate_release_notes: true
