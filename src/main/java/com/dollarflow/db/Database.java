@@ -72,7 +72,8 @@ public final class Database {
                     cgst_amount REAL NOT NULL DEFAULT 0,
                     sgst_rate REAL NOT NULL DEFAULT 0,
                     sgst_amount REAL NOT NULL DEFAULT 0,
-                    grand_total REAL NOT NULL DEFAULT 0
+                    grand_total REAL NOT NULL DEFAULT 0,
+                    customer_dob TEXT
                 )
                 """;
 
@@ -82,13 +83,14 @@ public final class Database {
                     company_name TEXT NOT NULL DEFAULT '',
                     company_address TEXT NOT NULL DEFAULT '',
                     cgst_rate REAL NOT NULL DEFAULT 9,
-                    sgst_rate REAL NOT NULL DEFAULT 9
+                    sgst_rate REAL NOT NULL DEFAULT 9,
+                    starting_bill_no INTEGER NOT NULL DEFAULT 10000
                 )
                 """;
 
         String seedSettings = """
-                INSERT OR IGNORE INTO settings (id, company_name, company_address, cgst_rate, sgst_rate)
-                VALUES (1, '', '', 9, 9)
+                INSERT OR IGNORE INTO settings (id, company_name, company_address, cgst_rate, sgst_rate, starting_bill_no)
+                VALUES (1, '', '', 9, 9, 10000)
                 """;
 
         try (Statement st = get0().createStatement()) {
@@ -105,6 +107,8 @@ public final class Database {
         addColumnIfMissing("bills", "sgst_rate", "REAL NOT NULL DEFAULT 0");
         addColumnIfMissing("bills", "sgst_amount", "REAL NOT NULL DEFAULT 0");
         addColumnIfMissing("bills", "grand_total", "REAL NOT NULL DEFAULT 0");
+        addColumnIfMissing("bills", "customer_dob", "TEXT");
+        addColumnIfMissing("settings", "starting_bill_no", "INTEGER NOT NULL DEFAULT 10000");
     }
 
     private static void addColumnIfMissing(String table, String column, String definition) {

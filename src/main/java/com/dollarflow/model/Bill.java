@@ -26,7 +26,8 @@ public record Bill(
         BigDecimal cgstAmount,
         BigDecimal sgstRate,
         BigDecimal sgstAmount,
-        BigDecimal grandTotal
+        BigDecimal grandTotal,
+        LocalDate customerDob
 ) {
 
     /**
@@ -37,7 +38,7 @@ public record Bill(
                                 String customerMobile, String reference, String yadiNumber,
                                 LocalDate adStartDate, LocalDate adEndDate,
                                 BigDecimal sizeX, BigDecimal sizeY, BigDecimal rate, BigDecimal discount,
-                                BigDecimal cgstRate, BigDecimal sgstRate) {
+                                BigDecimal cgstRate, BigDecimal sgstRate, LocalDate customerDob) {
         BigDecimal totalArea = sizeX.multiply(sizeY);
         BigDecimal totalPayable = totalArea.multiply(rate);
         BigDecimal finalAmount = totalPayable.subtract(discount);
@@ -46,6 +47,6 @@ public record Bill(
         BigDecimal grandTotal = finalAmount.add(cgstAmount).add(sgstAmount);
         return new Bill(billNo, billDate, customerName, customerAddress, customerMobile, reference, yadiNumber,
                 adStartDate, adEndDate, sizeX, sizeY, totalArea, rate, totalPayable, discount, finalAmount,
-                cgstRate, cgstAmount, sgstRate, sgstAmount, grandTotal);
+                cgstRate, cgstAmount, sgstRate, sgstAmount, grandTotal, customerDob);
     }
 }

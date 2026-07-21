@@ -138,6 +138,12 @@
     -fx-min-width: 70;
 }
 
+.required-marker {
+    -fx-text-fill: #D32F2F;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
 .draft-total {
     -fx-font-size: 12px;
     -fx-font-weight: bold;

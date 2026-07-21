@@ -29,6 +29,7 @@ public class SettingsView extends VBox {
     private final TextArea companyAddressField = new TextArea();
     private final TextField cgstRateField = new TextField();
     private final TextField sgstRateField = new TextField();
+    private final TextField startingBillNoField = new TextField();
 
     public SettingsView() {
         getStyleClass().add("view-container");
@@ -66,12 +67,14 @@ public class SettingsView extends VBox {
         companyAddressField.setWrapText(true);
         cgstRateField.setPromptText("9");
         sgstRateField.setPromptText("9");
+        startingBillNoField.setPromptText("10000");
 
         int row = 0;
         grid.addRow(row++, fieldLabel("Company Name"), companyNameField);
         grid.addRow(row++, fieldLabel("Company Address"), companyAddressField);
         grid.addRow(row++, fieldLabel("CGST Rate (%)"), cgstRateField);
-        grid.addRow(row, fieldLabel("SGST Rate (%)"), sgstRateField);
+        grid.addRow(row++, fieldLabel("SGST Rate (%)"), sgstRateField);
+        grid.addRow(row, fieldLabel("Starting Bill Number"), startingBillNoField);
 
         return grid;
     }
@@ -89,6 +92,7 @@ public class SettingsView extends VBox {
         companyAddressField.setText(settings.companyAddress());
         cgstRateField.setText(strip(settings.cgstRate()));
         sgstRateField.setText(strip(settings.sgstRate()));
+        startingBillNoField.setText(String.valueOf(settings.startingBillNo()));
     }
 
     private void save() {
@@ -99,10 +103,22 @@ public class SettingsView extends VBox {
             return;
         }
 
+        int startingBillNo;
+        try {
+            startingBillNo = Integer.parseInt(startingBillNoField.getText().trim());
+            if (startingBillNo <= 0) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException e) {
+            new Alert(Alert.AlertType.WARNING, "Starting bill number must be a positive whole number.", ButtonType.OK)
+                    .showAndWait();
+            return;
+        }
+
         Settings settings = new Settings(
                 companyNameField.getText() == null ? "" : companyNameField.getText().trim(),
                 companyAddressField.getText() == null ? "" : companyAddressField.getText().trim(),
-                cgst, sgst);
+                cgst, sgst, startingBillNo);
         dao.save(settings);
         onSaved.run();
 

@@ -60,6 +60,9 @@ public class BillReceiptView extends VBox {
         if (bill.customerMobile() != null) {
             grid.addRow(row++, label("Mobile", true), label(bill.customerMobile(), false));
         }
+        if (bill.customerDob() != null) {
+            grid.addRow(row++, label("Date of Birth", true), label(bill.customerDob().toString(), false));
+        }
         if (bill.reference() != null) {
             grid.addRow(row, label("Reference", true), label(bill.reference(), false));
         }

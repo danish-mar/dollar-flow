@@ -133,6 +133,12 @@ public class BillHistoryView extends VBox {
         TableColumn<Bill, String> mobileCol = new TableColumn<>("Mobile");
         mobileCol.setCellValueFactory(c -> new SimpleStringProperty(nullToEmpty(c.getValue().customerMobile())));
 
+        TableColumn<Bill, String> dobCol = new TableColumn<>("Date of Birth");
+        dobCol.setCellValueFactory(c -> {
+            var dob = c.getValue().customerDob();
+            return new SimpleStringProperty(dob == null ? "" : dob.toString());
+        });
+
         TableColumn<Bill, String> yadiCol = new TableColumn<>("Yadi No");
         yadiCol.setCellValueFactory(c -> new SimpleStringProperty(nullToEmpty(c.getValue().yadiNumber())));
 
@@ -170,7 +176,7 @@ public class BillHistoryView extends VBox {
         TableColumn<Bill, String> grandTotalCol = new TableColumn<>("Grand Total");
         grandTotalCol.setCellValueFactory(c -> new SimpleStringProperty(money(c.getValue().grandTotal())));
 
-        table.getColumns().addAll(List.of(billNoCol, dateCol, nameCol, mobileCol, yadiCol, periodCol,
+        table.getColumns().addAll(List.of(billNoCol, dateCol, nameCol, mobileCol, dobCol, yadiCol, periodCol,
                 sizeCol, rateCol, discountCol, taxableCol, gstCol, grandTotalCol));
         table.setPlaceholder(new Label("No bills yet"));
     }

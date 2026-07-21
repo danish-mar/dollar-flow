@@ -46,6 +46,7 @@ public class EditBillDialog {
     private final TextField discountField = new TextField();
     private final TextField cgstRateField = new TextField();
     private final TextField sgstRateField = new TextField();
+    private final DatePicker customerDobField = new DatePicker();
 
     private final Label grandTotalLabel = new Label("₹ 0.00");
 
@@ -95,6 +96,7 @@ public class EditBillDialog {
         discountField.setText(strip(bill.discount()));
         cgstRateField.setText(strip(bill.cgstRate()));
         sgstRateField.setText(strip(bill.sgstRate()));
+        customerDobField.setValue(bill.customerDob());
     }
 
     private GridPane buildForm() {
@@ -111,15 +113,17 @@ public class EditBillDialog {
         billDatePicker.setMaxWidth(Double.MAX_VALUE);
         adStartDatePicker.setMaxWidth(Double.MAX_VALUE);
         adEndDatePicker.setMaxWidth(Double.MAX_VALUE);
+        customerDobField.setMaxWidth(Double.MAX_VALUE);
 
         int row = 0;
-        grid.addRow(row++, fieldLabel("Bill Date"), billDatePicker, fieldLabel("Reference"), referenceField);
-        grid.addRow(row++, fieldLabel("Customer Name"), customerNameField, fieldLabel("Mobile No"), customerMobileField);
+        grid.addRow(row++, requiredFieldLabel("Bill Date"), billDatePicker, fieldLabel("Reference"), referenceField);
+        grid.addRow(row++, requiredFieldLabel("Customer Name"), customerNameField, fieldLabel("Mobile No"), customerMobileField);
         grid.addRow(row++, fieldLabel("Address"), customerAddressField, fieldLabel("Yadi Number"), yadiNumberField);
         grid.addRow(row++, fieldLabel("Ad Start Date"), adStartDatePicker, fieldLabel("Ad End Date"), adEndDatePicker);
         grid.addRow(row++, fieldLabel("Size X"), sizeXField, fieldLabel("Size Y"), sizeYField);
         grid.addRow(row++, fieldLabel("Rate (₹)"), rateField, fieldLabel("Discount (₹)"), discountField);
-        grid.addRow(row, fieldLabel("CGST Rate (%)"), cgstRateField, fieldLabel("SGST Rate (%)"), sgstRateField);
+        grid.addRow(row++, fieldLabel("CGST Rate (%)"), cgstRateField, fieldLabel("SGST Rate (%)"), sgstRateField);
+        grid.addRow(row, fieldLabel("Date of Birth"), customerDobField);
 
         return grid;
     }
@@ -205,7 +209,7 @@ public class EditBillDialog {
                 adStartDatePicker.getValue(),
                 adEndDatePicker.getValue(),
                 x, y, rate, parse(discountField.getText()),
-                parse(cgstRateField.getText()), parse(sgstRateField.getText()));
+                parse(cgstRateField.getText()), parse(sgstRateField.getText()), customerDobField.getValue());
 
         dao.update(updated);
         onSaved.run();
@@ -243,5 +247,11 @@ public class EditBillDialog {
         Label label = new Label(text);
         label.getStyleClass().add("field-label");
         return label;
+    }
+
+    private HBox requiredFieldLabel(String text) {
+        Label asterisk = new Label("*");
+        asterisk.getStyleClass().add("required-marker");
+        return new HBox(2, fieldLabel(text), asterisk);
     }
 }

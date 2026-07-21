@@ -27,7 +27,8 @@ class BillTest {
                 new BigDecimal("15"),
                 new BigDecimal("500"),
                 new BigDecimal("9"),
-                new BigDecimal("9"));
+                new BigDecimal("9"),
+                LocalDate.of(1990, 5, 15));
 
         assertEquals(new BigDecimal("200"), bill.totalArea());
         assertEquals(new BigDecimal("3000"), bill.totalPayable());

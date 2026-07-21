@@ -13,33 +13,22 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 
 public class BillDao {
 
-    private static final int MIN_BILL_NO = 10_000;
-    private static final int MAX_BILL_NO = 99_999;
-    private final Random random = new Random();
-
-    /** A random 5-digit bill number not already in use; shown to the user before they submit. */
-    public int generateBillNumber() {
-        int candidate;
-        do {
-            candidate = MIN_BILL_NO + random.nextInt(MAX_BILL_NO - MIN_BILL_NO + 1);
-        } while (exists(candidate));
-        return candidate;
-    }
-
-    private boolean exists(int billNo) {
-        String sql = "SELECT 1 FROM bills WHERE bill_no = ?";
-        try (PreparedStatement ps = Database.get().prepareStatement(sql)) {
-            ps.setInt(1, billNo);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
+    /**
+     * The next sequential bill number: one past the highest bill number saved so far, or the
+     * configured starting number if no bills exist yet (or the sequence hasn't caught up to it).
+     */
+    public int nextBillNumber(int startingBillNo) {
+        String sql = "SELECT MAX(bill_no) AS max_no FROM bills";
+        try (Statement st = Database.get().createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            int maxNo = rs.next() ? rs.getInt("max_no") : 0;
+            return Math.max(maxNo + 1, startingBillNo);
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not check bill number", e);
+            throw new IllegalStateException("Could not determine next bill number", e);
         }
     }
 
@@ -48,8 +37,8 @@ public class BillDao {
                 INSERT INTO bills (bill_no, bill_date, customer_name, customer_address, customer_mobile, reference,
                                     yadi_number, ad_start_date, ad_end_date, size_x, size_y, total_area,
                                     rate, total_payable, discount, final_amount,
-                                    cgst_rate, cgst_amount, sgst_rate, sgst_amount, grand_total)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                    cgst_rate, cgst_amount, sgst_rate, sgst_amount, grand_total, customer_dob)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         try (PreparedStatement ps = Database.get().prepareStatement(sql)) {
             ps.setInt(1, bill.billNo());
@@ -73,6 +62,7 @@ public class BillDao {
             ps.setDouble(19, bill.sgstRate().doubleValue());
             ps.setDouble(20, bill.sgstAmount().doubleValue());
             ps.setDouble(21, bill.grandTotal().doubleValue());
+            ps.setString(22, bill.customerDob() == null ? null : bill.customerDob().toString());
             ps.executeUpdate();
             return bill;
         } catch (SQLException e) {
@@ -86,7 +76,7 @@ public class BillDao {
                                   reference = ?, yadi_number = ?, ad_start_date = ?, ad_end_date = ?,
                                   size_x = ?, size_y = ?, total_area = ?, rate = ?, total_payable = ?,
                                   discount = ?, final_amount = ?, cgst_rate = ?, cgst_amount = ?,
-                                  sgst_rate = ?, sgst_amount = ?, grand_total = ?
+                                  sgst_rate = ?, sgst_amount = ?, grand_total = ?, customer_dob = ?
                 WHERE bill_no = ?
                 """;
         try (PreparedStatement ps = Database.get().prepareStatement(sql)) {
@@ -110,7 +100,8 @@ public class BillDao {
             ps.setDouble(18, bill.sgstRate().doubleValue());
             ps.setDouble(19, bill.sgstAmount().doubleValue());
             ps.setDouble(20, bill.grandTotal().doubleValue());
-            ps.setInt(21, bill.billNo());
+            ps.setString(21, bill.customerDob() == null ? null : bill.customerDob().toString());
+            ps.setInt(22, bill.billNo());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new IllegalStateException("Could not update bill", e);
@@ -151,10 +142,10 @@ public class BillDao {
         return distinctValues("reference");
     }
 
-    /** Address/mobile/reference from this customer's most recent bill, for fast-entry autofill. */
+    /** Address/mobile/reference/DOB from this customer's most recent bill, for fast-entry autofill. */
     public Optional<CustomerInfo> findLatestCustomerInfo(String customerName) {
         String sql = """
-                SELECT customer_address, customer_mobile, reference FROM bills
+                SELECT customer_address, customer_mobile, reference, customer_dob FROM bills
                 WHERE customer_name = ? ORDER BY bill_no DESC LIMIT 1
                 """;
         try (PreparedStatement ps = Database.get().prepareStatement(sql)) {
@@ -166,7 +157,8 @@ public class BillDao {
                 return Optional.of(new CustomerInfo(
                         rs.getString("customer_address"),
                         rs.getString("customer_mobile"),
-                        rs.getString("reference")));
+                        rs.getString("reference"),
+                        parseDate(rs.getString("customer_dob"))));
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Could not look up customer info", e);
@@ -210,7 +202,8 @@ public class BillDao {
                 BigDecimal.valueOf(rs.getDouble("cgst_amount")),
                 BigDecimal.valueOf(rs.getDouble("sgst_rate")),
                 BigDecimal.valueOf(rs.getDouble("sgst_amount")),
-                BigDecimal.valueOf(rs.getDouble("grand_total"))
+                BigDecimal.valueOf(rs.getDouble("grand_total")),
+                parseDate(rs.getString("customer_dob"))
         );
     }
 
@@ -218,6 +211,6 @@ public class BillDao {
         return value == null ? null : LocalDate.parse(value);
     }
 
-    public record CustomerInfo(String address, String mobile, String reference) {
+    public record CustomerInfo(String address, String mobile, String reference, LocalDate dob) {
     }
 }

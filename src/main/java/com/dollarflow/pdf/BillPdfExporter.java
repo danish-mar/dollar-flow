@@ -52,6 +52,9 @@ public final class BillPdfExporter {
                 if (bill.customerMobile() != null) {
                     y = writeLine(cs, PDType1Font.HELVETICA, 10, "Mobile: " + bill.customerMobile(), y);
                 }
+                if (bill.customerDob() != null) {
+                    y = writeLine(cs, PDType1Font.HELVETICA, 10, "Date of Birth: " + bill.customerDob(), y);
+                }
                 if (bill.reference() != null) {
                     y = writeLine(cs, PDType1Font.HELVETICA, 10, "Reference: " + bill.reference(), y);
                 }

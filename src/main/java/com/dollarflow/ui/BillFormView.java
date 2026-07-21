@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.feather.Feather;
@@ -31,7 +32,7 @@ public class BillFormView extends VBox {
     };
 
     private final Label billNoLabel = new Label();
-    private final Label billDateLabel = new Label();
+    private final DatePicker billDatePicker = new DatePicker();
 
     private final TextField customerNameField = new TextField();
     private final TextField referenceField = new TextField();
@@ -44,6 +45,7 @@ public class BillFormView extends VBox {
     private final TextField sizeYField = new TextField();
     private final TextField rateField = new TextField();
     private final TextField discountField = new TextField();
+    private final DatePicker customerDobField = new DatePicker();
 
     private final Label totalAreaLabel = new Label("0");
     private final Label totalPayableLabel = new Label("₹ 0.00");
@@ -55,6 +57,7 @@ public class BillFormView extends VBox {
 
     private BigDecimal cgstRate = BigDecimal.ZERO;
     private BigDecimal sgstRate = BigDecimal.ZERO;
+    private int startingBillNo = 10_000;
     private int currentBillNo;
 
     public BillFormView() {
@@ -91,6 +94,7 @@ public class BillFormView extends VBox {
         var settings = settingsDao.get();
         cgstRate = settings.cgstRate();
         sgstRate = settings.sgstRate();
+        startingBillNo = settings.startingBillNo();
         cgstLabel.setText("CGST (" + strip(cgstRate) + "%)");
         sgstLabel.setText("SGST (" + strip(sgstRate) + "%)");
     }
@@ -106,6 +110,9 @@ public class BillFormView extends VBox {
             if (referenceField.getText().isBlank() && info.reference() != null) {
                 referenceField.setText(info.reference());
             }
+            if (customerDobField.getValue() == null && info.dob() != null) {
+                customerDobField.setValue(info.dob());
+            }
         });
     }
 
@@ -114,8 +121,8 @@ public class BillFormView extends VBox {
         grid.setHgap(16);
         grid.getStyleClass().add("form-grid");
         billNoLabel.getStyleClass().add("card-title");
-        billDateLabel.getStyleClass().add("card-title");
-        grid.addRow(0, fieldLabel("Bill No"), billNoLabel, fieldLabel("Bill Date"), billDateLabel);
+        billDatePicker.setMaxWidth(Double.MAX_VALUE);
+        grid.addRow(0, fieldLabel("Bill No"), billNoLabel, fieldLabel("Bill Date"), billDatePicker);
         return grid;
     }
 
@@ -143,14 +150,16 @@ public class BillFormView extends VBox {
         adEndDatePicker.setPromptText("End date");
         adStartDatePicker.setMaxWidth(Double.MAX_VALUE);
         adEndDatePicker.setMaxWidth(Double.MAX_VALUE);
+        customerDobField.setPromptText("Date of birth");
+        customerDobField.setMaxWidth(Double.MAX_VALUE);
 
         int row = 0;
-        grid.addRow(row++, fieldLabel("Customer Name"), customerNameField, fieldLabel("Reference"), referenceField);
+        grid.addRow(row++, requiredFieldLabel("Customer Name"), customerNameField, fieldLabel("Reference"), referenceField);
         grid.addRow(row++, fieldLabel("Address"), customerAddressField, fieldLabel("Mobile No"), customerMobileField);
         grid.addRow(row++, fieldLabel("Yadi Number"), yadiNumberField, fieldLabel("Ad Start Date"), adStartDatePicker);
         grid.addRow(row++, fieldLabel("Ad End Date"), adEndDatePicker, fieldLabel("Size X"), sizeXField);
-        grid.addRow(row, fieldLabel("Size Y"), sizeYField, fieldLabel("Rate (₹)"), rateField);
-        grid.addRow(row + 1, fieldLabel("Discount (₹)"), discountField);
+        grid.addRow(row++, fieldLabel("Size Y"), sizeYField, fieldLabel("Rate (₹)"), rateField);
+        grid.addRow(row, fieldLabel("Discount (₹)"), discountField, fieldLabel("Date of Birth"), customerDobField);
 
         return grid;
     }
@@ -240,11 +249,15 @@ public class BillFormView extends VBox {
             rateField.requestFocus();
             return;
         }
+        if (billDatePicker.getValue() == null) {
+            warn("Bill date is required.");
+            return;
+        }
         BigDecimal discount = parse(discountField.getText());
 
         Bill bill = Bill.compute(
                 currentBillNo,
-                LocalDate.now(),
+                billDatePicker.getValue(),
                 name,
                 blankToNull(customerAddressField.getText()),
                 blankToNull(customerMobileField.getText()),
@@ -252,7 +265,7 @@ public class BillFormView extends VBox {
                 blankToNull(yadiNumberField.getText()),
                 adStartDatePicker.getValue(),
                 adEndDatePicker.getValue(),
-                x, y, rate, discount, cgstRate, sgstRate);
+                x, y, rate, discount, cgstRate, sgstRate, customerDobField.getValue());
 
         dao.insert(bill);
         onSaved.run();
@@ -261,9 +274,9 @@ public class BillFormView extends VBox {
 
     private void resetForm() {
         loadRates();
-        currentBillNo = dao.generateBillNumber();
+        currentBillNo = dao.nextBillNumber(startingBillNo);
         billNoLabel.setText(String.valueOf(currentBillNo));
-        billDateLabel.setText(LocalDate.now().toString());
+        billDatePicker.setValue(LocalDate.now());
 
         customerNameField.clear();
         referenceField.clear();
@@ -276,6 +289,7 @@ public class BillFormView extends VBox {
         sizeYField.clear();
         rateField.clear();
         discountField.clear();
+        customerDobField.setValue(null);
 
         recomputeTotals();
         customerNameField.requestFocus();
@@ -315,5 +329,12 @@ public class BillFormView extends VBox {
         Label label = new Label(text);
         label.getStyleClass().add("field-label");
         return label;
+    }
+
+    private HBox requiredFieldLabel(String text) {
+        Label asterisk = new Label("*");
+        asterisk.getStyleClass().add("required-marker");
+        HBox box = new HBox(2, fieldLabel(text), asterisk);
+        return box;
     }
 }
