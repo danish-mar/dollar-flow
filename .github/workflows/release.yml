@@ -46,7 +46,7 @@ jobs:
             --input target \
             --name "Dollar Flow" \
             --main-jar "$JAR_NAME" \
-            --main-class com.dollarflow.app.Main \
+            --main-class com.dollarflow.app.Launcher \
             --type exe \
             --app-version "$VERSION" \
             --vendor "Dollar Flow" \
